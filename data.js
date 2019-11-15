@@ -1,4 +1,4 @@
-const things = [{
+const things = {
     color: "yellow",
     radius: 50, // 50
     speed: 0,
@@ -35,4 +35,4 @@ const things = [{
             satellites: []
         }
     ]
-}];
+};

@@ -31,37 +31,33 @@ const drawCircle = (x, y, radius, color, fill = true) => {
     }
 };
 
-const drawCircles = (circles = things, mx = 0, my = 0, frame, center) => {
-    circles.forEach(circle => {
-        drawCircle(mx - center[0], my - center[1], circle.radius, circle.color);
-        circle.satellites.forEach(satellite => {
-            // satellite.angle += satellite.speed;
-            const [x, y] = [
-                mx + satellite.orbitRadius * Math.cos(satellite.speed * frame),
-                my + satellite.orbitRadius * Math.sin(satellite.speed * frame)
-            ];
-            drawCircles([satellite], x, y, frame, center);
-        });
+const drawCircles = (circle = data, mx = 0, my = 0, frame, center) => {
+    drawCircle(mx - center[0], my - center[1], circle.radius, circle.color);
+    circle.satellites.forEach(satellite => {
+        // satellite.angle += satellite.speed;
+        const [x, y] = [
+            mx + satellite.orbitRadius * Math.cos(satellite.speed * frame),
+            my + satellite.orbitRadius * Math.sin(satellite.speed * frame)
+        ];
+        drawCircles(satellite, x, y, frame, center);
     });
 };
 
 // Coordinates of the center satellite
 const getCenter = () => {
     let ready = [];
-    const getCircles = (circles = things, mx = 0, my = 0) => {
-        for (let i = 0; i < circles.length; i++) {
-            for (let j = 0; j < circles[i].satellites.length; j++) {
-                const satellite = circles[i].satellites[j];
-                const [x, y] = [
-                    mx + satellite.orbitRadius * Math.cos(satellite.speed * frame),
-                    my + satellite.orbitRadius * Math.sin(satellite.speed * frame)
-                ];
-                if (satellite.center) ready = [x, y];
-                /* return */ getCircles([satellite], x, y);
-            }
+    const getCircles = (circle = thing, mx = 0, my = 0) => {
+        for (let i = 0; i < circle.satellites.length; i++) {
+            const satellite = circle.satellites[i];
+            const [x, y] = [
+                mx + satellite.orbitRadius * Math.cos(satellite.speed * frame),
+                my + satellite.orbitRadius * Math.sin(satellite.speed * frame)
+            ];
+            if (satellite.center) ready = [x, y];
+            getCircles(satellite, x, y);
         }
     };
-    /* return */ getCircles(things);
+    getCircles(things);
     return ready.length !== 0 ? ready : [0, 0];
 };
 
