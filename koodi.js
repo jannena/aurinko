@@ -10,6 +10,13 @@ const ctx = canvas.getContext("2d");
 
 // ctx.translate(canvas.width / 2, canvas.height / 2);
 
+const setCanvasSize = () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+};
+window.addEventListener("resize", setCanvasSize);
+setCanvasSize();
+
 const cX = x => canvas.width / 2 + x;
 const cY = y => canvas.height / 2 + y;
 
@@ -24,83 +31,51 @@ const drawCircle = (x, y, radius, color, fill = true) => {
     }
 };
 
-const things = [
-    {
-        color: "yellow",
-        radius: 50,
-        speed: 0,
-        satellites: [
-            {
-                color: "blue",
-                radius: 25,
-                orbitRadius: 100,
-                speed: 0.01,
-                angle: 0,
-                satellites: [
-                    {
-                        center: true,
-                        color: "grey",
-                        radius: 5,
-                        orbitRadius: 40,
-                        speed: 0.12,
-                        angle: 0,
-                        satellites: []
-                    }
-                ]
-            },
-            {
-                color: "orange",
-                radius: 35,
-                orbitRadius: 200,
-                speed: 0.05,
-                angle: 0,
-                satellites: []
-            }
-        ]
-    }
-];
-
-const drawCircles = (circles = things, mx = 0, my = 0) => {
+const drawCircles = (circles = things, mx = 0, my = 0, frame, center) => {
     circles.forEach(circle => {
-        drawCircle(mx, my, circle.radius, circle.color);
+        drawCircle(mx - center[0], my - center[1], circle.radius, circle.color);
         circle.satellites.forEach(satellite => {
-            satellite.angle += satellite.speed;
+            // satellite.angle += satellite.speed;
             const [x, y] = [
-                mx + satellite.orbitRadius * Math.cos(satellite.angle),
-                my + satellite.orbitRadius * Math.sin(satellite.angle)
+                mx + satellite.orbitRadius * Math.cos(satellite.speed * frame),
+                my + satellite.orbitRadius * Math.sin(satellite.speed * frame)
             ];
-            if (satellite.center) {
-                const oldAngle = satellite.angle - satellite.speed;
-                const [oX, oY] = [
-                    mx + satellite.orbitRadius * Math.cos(oldAngle),
-                    my + satellite.orbitRadius * Math.sin(oldAngle)
-                ];
-                rotationMove = [oX - x, oY - y];
-            }
-            // drawCircle(x, y, satellite.radius, satellite.color);
-            drawCircles([satellite], x, y);
+            drawCircles([satellite], x, y, frame, center);
         });
     });
 };
 
-let rotationOfCenter = 0.01;
-let rotationMove = [];
+// Coordinates of the center satellite
+const getCenter = () => {
+    let ready = [];
+    const getCircles = (circles = things, mx = 0, my = 0) => {
+        for (let i = 0; i < circles.length; i++) {
+            for (let j = 0; j < circles[i].satellites.length; j++) {
+                const satellite = circles[i].satellites[j];
+                const [x, y] = [
+                    mx + satellite.orbitRadius * Math.cos(satellite.speed * frame),
+                    my + satellite.orbitRadius * Math.sin(satellite.speed * frame)
+                ];
+                if (satellite.center) ready = [x, y];
+                /* return */ getCircles([satellite], x, y);
+            }
+        }
+    };
+    /* return */ getCircles(things);
+    return ready.length !== 0 ? ready : [0, 0];
+};
 
-// ctx.save();
+let frame = 0;
 
 const play = () => {
     window.requestAnimationFrame(() => {
-        // ctx.restore();
         ctx.clearRect(0, 0, canvas.clientWidth, canvas.height);
-        // ctx.clearRect(-10000, -1000, 10000, 10000);
-        // fillStyle = "white";
-        // ctx.fillRect(-10000, -10000, 10000, 10000);
 
-        drawCircles();
-        // ctx.rotate(rotationOfCenter);
-        // ctx.translate(rotationMove[0], rotationMove[1]);
-        // ctx.setTransform(1, 1, 1, 1, 5, 0);
+        center = getCenter() || [0, 0];
 
+        drawCircles(things, 0, 0, frame, getCenter() || [0, 0]);
+
+        frame += 0.1;
         play();
     });
 };
