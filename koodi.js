@@ -32,12 +32,12 @@ const drawCircle = (x, y, radius, color, fill = true) => {
 };
 
 const drawCircles = (circle = data, mx = 0, my = 0, frame, center) => {
-    drawCircle(mx - center[0], my - center[1], circle.radius, circle.color);
+    drawCircle(mx - center[0] + moved[0], my - center[1] + moved[1], circle.radius * ratio[3], circle.color);
     circle.satellites.forEach(satellite => {
         // satellite.angle += satellite.speed;
         const [x, y] = [
-            mx + satellite.orbitRadius * Math.cos(satellite.speed * frame),
-            my + satellite.orbitRadius * Math.sin(satellite.speed * frame)
+            mx + satellite.orbitRadius * ratio[2] * Math.cos(satellite.speed * frame),
+            my + satellite.orbitRadius * ratio[2] * Math.sin(satellite.speed * frame)
         ];
         drawCircles(satellite, x, y, frame, center);
     });
@@ -50,8 +50,8 @@ const getCenter = () => {
         for (let i = 0; i < circle.satellites.length; i++) {
             const satellite = circle.satellites[i];
             const [x, y] = [
-                mx + satellite.orbitRadius * Math.cos(satellite.speed * frame),
-                my + satellite.orbitRadius * Math.sin(satellite.speed * frame)
+                mx + satellite.orbitRadius * ratio[2] * Math.cos(satellite.speed * frame),
+                my + satellite.orbitRadius * ratio[2] * Math.sin(satellite.speed * frame)
             ];
             if (satellite.center) ready = [x, y];
             getCircles(satellite, x, y);
@@ -65,15 +65,17 @@ let frame = 0;
 
 const play = () => {
     window.requestAnimationFrame(() => {
-        ctx.clearRect(0, 0, canvas.clientWidth, canvas.height);
+        if (halt) return play();
+        if (clear) ctx.clearRect(0, 0, canvas.clientWidth, canvas.height);
+        move();
 
         center = getCenter() || [0, 0];
 
         drawCircles(things, 0, 0, frame, getCenter() || [0, 0]);
 
-        frame += 0.1;
+        frame += 1 * ratio[1];
         play();
     });
 };
 
-play();
+play();;

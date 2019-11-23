@@ -1,17 +1,17 @@
 const things = {
     color: "yellow",
-    radius: 50, // 50
+    radius: 0, // 50
     speed: 0,
     satellites: [
         {
             color: "blue",
-            radius: 25, // 25
+            radius: 0, // 25
             orbitRadius: 150,
             speed: 0.2,
             satellites: [
                 {
                     color: "grey",
-                    radius: 5, // 5
+                    radius: 0, // 5
                     orbitRadius: 75,
                     speed: 1,
                     satellites: [
@@ -34,7 +34,7 @@ const things = {
                         {
                             // center: true,
                             color: "black",
-                            radius: 5,
+                            radius: 0,
                             orbitRadius: 30,
                             speed: 0.1,
                             satellites: []
@@ -44,20 +44,21 @@ const things = {
             ]
         },
         {
+            // center: true,
             color: "orange",
-            radius: 0, // 35
+            radius: 1, // 35
             orbitRadius: 350,
-            speed: 0.05,
+            speed: 0.15,
             satellites: [
                 {
                     color: "blue",
-                    radius: 0, // 25
+                    radius: 1, // 25
                     orbitRadius: 150,
-                    speed: 0.2,
+                    speed: 0.6,
                     satellites: [
                         {
                             color: "grey",
-                            radius: 0, // 5
+                            radius: 1, // 5
                             orbitRadius: 75,
                             speed: 1,
                             satellites: [
@@ -68,7 +69,6 @@ const things = {
                                     speed: 0.7,
                                     satellites: [
                                         {
-                                            // center: true,
                                             color: "grey",
                                             radius: 0,
                                             orbitRadius: 20,
@@ -78,7 +78,7 @@ const things = {
                                     ]
                                 },
                                 {
-                                    // center: true,
+                                    center: true,
                                     color: "red",
                                     radius: 5,
                                     orbitRadius: 30,
